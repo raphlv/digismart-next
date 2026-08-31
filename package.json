@@ -1,0 +1,65 @@
+{
+  "name": "digismart-next",
+  "version": "2.0.0",
+  "private": true,
+  "main": "electron/main.js",
+  "author": "Pangeran Ryan",
+  "description": "DIGISMART - AI Public Communication Command Center",
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0 -p 3006",
+    "build": "next build",
+    "export": "next build",
+    "start": "next start -p 3006",
+    "lint": "next lint",
+    "electron:dev": "electron .",
+    "dist:win": "electron-builder --win --dir",
+    "dist:exe": "electron-builder --win nsis portable"
+  },
+  "build": {
+    "appId": "com.digismart.app",
+    "productName": "DIGISMART",
+    "copyright": "Copyright © 2026 DIGISMART",
+    "electronVersion": "31.0.0",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.453.0",
+    "next": "14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "docx": "^9.7.1",
+    "electron": "31.0.0",
+    "electron-builder": "^24.13.3",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3"
+  }
+}
