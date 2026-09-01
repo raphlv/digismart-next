@@ -171,8 +171,8 @@ digismart-next/
       <a href="mailto:pangeranryan080504@gmail.com">
         <img src="https://img.shields.io/badge/Email-pangeranryan080504@gmail.com-D14836?style=flat&logo=gmail&logoColor=white" alt="Email" />
       </a>
-      <a href="https://instagram.com/raphlv">
-        <img src="https://img.shields.io/badge/Instagram-@raphlv-E4405F?style=flat&logo=instagram&logoColor=white" alt="Instagram" />
+      <a href="https://instagram.com/jspryourbae">
+        <img src="https://img.shields.io/badge/Instagram-@jspryourbae-E4405F?style=flat&logo=instagram&logoColor=white" alt="Instagram" />
       </a>
     </td>
   </tr>
