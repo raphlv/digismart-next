@@ -1,8 +1,8 @@
-﻿<div align="center">
+<div align="center">
 
-# DIGISMART v2.0 â€” AI Public Communication Command Center
+# DIGISMART v2.0 - AI Public Communication Command Center
 
-### *Cross-Platform Crisis Simulator, 5W+1H News Generator, & Public Sentiment NLP Engine*
+### *Cross-Platform Crisis Simulator, 5W+1H News Generator, and Public Sentiment NLP Engine*
 
 ![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -43,7 +43,7 @@ DIGISMART v2.0 is an enterprise public communication command center engineered f
 
 ## Setup and Execution
 
-`ash
+`ash
 git clone https://github.com/raphlv/digismart-next.git
 cd digismart-next
 npm install
@@ -53,7 +53,4 @@ npm run dev
 ---
 
 ## Developer and Maintainer
-Pangeran Ryan Pahlevi â€” https://pangeranryan.vercel.app
-
-<!-- Last verified: 2026-09-01 13:10:43 by Pangeran Ryan Pahlevi -->
-
+Pangeran Ryan Pahlevi - https://pangeranryan.vercel.app
