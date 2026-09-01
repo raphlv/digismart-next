@@ -1,188 +1,126 @@
 ﻿<div align="center">
 
-# ðŸš€ DIGISMART v2.0
-### **AI Public Communication Command Center & Interactive PR Simulator**
+# ðŸ¤– DIGISMART v2.0 â€” AI Public Communication Command Center
 
-[![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Electron](https://img.shields.io/badge/Electron-31.0-47848F?style=for-the-badge&logo=electron&logoColor=white)](https://www.electronjs.org/)
-[![Capacitor](https://img.shields.io/badge/Capacitor-6.1-119EFF?style=for-the-badge&logo=capacitor&logoColor=white)](https://capacitorjs.com/)
-[![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Windows%20.EXE%20%7C%20Android%20.APK-success?style=for-the-badge)]()
+### *Cross-Platform Crisis Simulator, 5W+1H News Generator, & Public Sentiment NLP Engine*
 
-<p align="center">
-  <b>Platform terpadu pemantauan isu publik, generator berita berbasis AI 5W+1H, analisis sentimen netizen NLP, perumusan holding statement respons krisis, dan media simulasi kehumasan digital multi-platform.</b>
-</p>
-
-[Fitur Utama](#-fitur-utama) â€¢ [Multi-Platform](#-dukungan-multi-platform) â€¢ [Teknologi](#-arsitektur--teknologi) â€¢ [Instalasi](#-panduan-instalasi--menjalankan) â€¢ [Pengembang](#-pengembang-developer)
+![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Electron](https://img.shields.io/badge/Electron-30.0-47848F?style=for-the-badge&logo=electron&logoColor=white)
+![Capacitor](https://img.shields.io/badge/Capacitor-6.0-119EFF?style=for-the-badge&logo=capacitor&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
 ---
 
 </div>
 
-## ðŸ“– Tentang Proyek
+## ðŸ“Œ About DIGISMART
 
-**DIGISMART v2.0** (*Digital Smart Communication & AI Command Center*) adalah sistem instrumen kehumasan (*Public Relations*) modern yang dirancang untuk membantu praktisi komunikasi, humas instansi/kementerian, maupun mahasiswa dalam memantau sentimen publik secara *real-time*, memproduksi warta resmi dengan kecerdasan buatan, serta merumuskan strategi mitigasi krisis reputasi dalam kurun waktu *Golden Hour* (< 60 menit).
-
-Aplikasi ini dikembangkan dengan arsitektur **Multi-Platform** yang dapat diakses melalui antarmuka **Web Responsif**, aplikasi mandiri **Desktop Windows (`.EXE`)**, dan aplikasi mobile smartphone **Android (`.APK` / PWA)**.
+**DIGISMART v2.0** is an enterprise public communication command center engineered for public relations (PR) officers, government agencies, and corporate communications teams. It automates media monitoring, evaluates public sentiment polarity, and generates journalistic news & crisis holding statements within the **Golden Hour (< 60 minutes)**.
 
 ---
 
-## âœ¨ Fitur Utama
+## âœ¨ Key Features & Architecture
 
-### 1. ðŸ“Š Dashboard Command Center
-* **4 Kartu Metrik Utama**: *Total Berita Dibuat*, *Isu Dipantau*, *Analisis Sentimen*, dan *Aktivitas AI* dengan indikator fluktuasi harian.
-* **Multi-Line SVG Trend Chart**: Pemantauan grafik tren isu & warta harian (Senin - Minggu) dengan *interactive hover tooltip*.
-* **Donut Chart Sentimen Publik**: Pemetaan proporsi opini publik (*Positif 45%, Netral 35%, Negatif 20%*).
-* **Live Skenario Switcher**: Fitur simulasi pengganti kondisi isu (*Umum, Krisis Server KRS, Peluncuran Beasiswa*) secara instan.
+### ðŸ“Š 1. Command Center & Sentiment Heatmap
+- Live sentiment polarity classification (Positive, Neutral, Negative).
+- Real-time SVG dynamic trend charts and topic cluster mapping.
 
-### 2. ðŸ“° AI News Generator (`/news-generator`)
-* Pembuat draf berita otomatis berstandar jurnalistik **5W+1H**.
-* Pemilihan gaya bahasa (*Formal/Pemerintah, Investigatif, Klarifikasi Krisis, Populer*), draf kutipan pimpinan resmi, dan fitur salin teks instan.
+### ðŸ“ 2. AI News Generator (5W+1H)
+- Automated journalistic press release generator conforming to standard 5W+1H structure.
+- Multi-channel export (Official Portal, Media Release, Social Media Payload).
 
-### 3. ðŸ§  Sentiment Analysis NLP Engine (`/sentiment-analysis`)
-* Kalkulator analisis sentimen teks/opini netizen berbasis pemrosesan bahasa alami (*NLP*).
-* Deteksi spektrum emosi (*Apresiasi, Kekhawatiran, Netral*), ekstraksi kata kunci pemicu polaritas (+/-), dan rekomendasi tindakan humas.
+### ðŸš¨ 3. Crisis Response & Holding Statement Generator
+- Rapid escalation assessment based on PR disaster severity.
+- Automated holding statement and press conference talking point suggestions.
 
-### 4. ðŸ“¡ Social Listening & Issue Tracker (`/social-listening`)
-* Pemantauan percakapan publik dari berbagai saluran media (*X/Twitter, Instagram, TikTok, Berita Online*).
-* Filter sentimen, penanda tingkat risiko krisis (*Low, Medium, High Risk*), dan tombol simulasi injeksi postingan.
-
-### 5. âš¡ Quick Response Crisis AI (`/quick-response`)
-* Generator *Holding Statement* darurat dalam kurun waktu *Golden Hour* menerapkan formula komunikasi:
-  $$\text{Holding Statement} = \text{Acknowledge (Akui)} + \text{Action (Tindakan)} + \text{Assurance (Kepastian)}$$
-
-### 6. ðŸ“± Social Media Planner & Mockup (`/social-media`)
-* Composer konten media sosial dilengkapi pratinjau kartu mockup smartphone (*Instagram Feed/Story, X/Twitter, LinkedIn*).
-* Rekomendasi tagar (*hashtags*) otomatis dan waktu tayang optimal.
-
-### 7. ðŸ“„ Official Press Release Builder (`/press-release`)
-* Penyusun naskah siaran pers baku instansi dengan kop surat resmi, penomoran rilis, tanggal embargo, dan kontak *media relations*.
-
-### 8. ðŸ“š Knowledge Base & Learning Hub (`/knowledge-base`)
-* Modul materi teori komunikasi publik, studi kasus krisis reputasi nyata di Indonesia, prompt library, serta kuis simulasi interaktif dengan penilaian otomatis (0-100).
+### ðŸ’» 4. Multi-Platform Deployment
+- **Web App**: Next.js 14 with full responsiveness.
+- **Desktop App**: Windows .EXE packaged via Electron.
+- **Mobile App**: Android .APK packaged via Capacitor.
 
 ---
 
-## ðŸ“± Dukungan Multi-Platform
+## ðŸš€ Setup & Execution
 
-| Platform | Format Berkas | Teknologi | Status |
-|---|---|---|---|
-| **Web Application** | Web Browser (Chrome/Edge/Safari) | Next.js 14 App Router | âœ… Siap Pakai |
-| **Desktop PC / Laptop** | Standalone Executable (`.EXE`) | Electron Framework | âœ… Siap Pakai |
-| **Android Smartphone** | Android Package (`.APK`) | Capacitor + Gradle | âœ… Siap Pakai |
-| **Mobile & Tablet** | Progressive Web App (PWA) | Google Web App Manifest | âœ… Siap Pakai |
-
----
-
-## ðŸ’» Arsitektur & Teknologi
-
-* **Framework Inti:** [Next.js 14](https://nextjs.org/) (App Router, Static HTML Export)
-* **Bahasa Pemrograman:** [TypeScript](https://www.typescriptlang.org/) & [JavaScript (ES6+)](https://developer.mozilla.org/)
-* **Desain & Styling:** [Tailwind CSS 3.4](https://tailwindcss.com/) dengan palet Command Center Slate-Dark (`#0B1120`)
-* **Ikonografi:** [Lucide React](https://lucide.dev/)
-* **Desktop Wrapper:** [Electron 31](https://www.electronjs.org/) dengan *built-in local loopback server*
-* **Mobile Wrapper:** [@capacitor/core & @capacitor/android](https://capacitorjs.com/)
-
----
-
-## ðŸš€ Panduan Instalasi & Menjalankan
-
-### Prasyarat:
-* Node.js versi 18.x atau 20.x+
-* Git
-
-### 1. Clone Repositori
-```bash
+`ash
 git clone https://github.com/raphlv/digismart-next.git
 cd digismart-next
-```
-
-### 2. Install Dependensi
-```bash
 npm install
-```
-
-### 3. Menjalankan di Web Browser (Mode Dev)
-```bash
 npm run dev
-```
-Buka browser di alamat: **`http://localhost:3006`**
+`
+"@
 
-### 4. Menjalankan Aplikasi Desktop (Electron)
-```bash
-npm run electron:dev
-```
-
-### 5. Melakukan Build Aplikasi Mandiri Windows (.EXE)
-```bash
-npm run build
-npm run dist:win
-```
-File `.exe` akan dihasilkan di folder `dist/win-unpacked/DIGISMART.exe`.
-
----
-
-## ðŸ“‚ Struktur Direktori
-
-```
-digismart-next/
-â”œâ”€â”€ app/                      # Next.js App Router (8 Modul Rute)
-â”‚   â”œâ”€â”€ layout.tsx            # Root Layout & SEO Metadata
-â”‚   â”œâ”€â”€ page.tsx              # Dashboard Utama Command Center
-â”‚   â”œâ”€â”€ news-generator/       # Generator Berita AI 5W+1H
-â”‚   â”œâ”€â”€ sentiment-analysis/   # Engine Analisis Sentimen NLP
-â”‚   â”œâ”€â”€ social-listening/     # Pemantauan Percakapan Netizen
-â”‚   â”œâ”€â”€ quick-response/       # Respon Krisis & Holding Statement
-â”‚   â”œâ”€â”€ social-media/         # Planner & Mockup Media Sosial
-â”‚   â”œâ”€â”€ press-release/        # Pembuat Siaran Pers Resmi
-â”‚   â””â”€â”€ knowledge-base/       # Pusat Edukasi, Studi Kasus & Kuis
-â”œâ”€â”€ components/               # Komponen Antarmuka Reusable
-â”‚   â”œâ”€â”€ Header.tsx            # Top Bar & Scenario Switcher
-â”‚   â”œâ”€â”€ Sidebar.tsx           # Navigasi Multi-Device
-â”‚   â”œâ”€â”€ StatCard.tsx          # Kartu Metrik Interaktif
-â”‚   â”œâ”€â”€ IssueMonitoringChart  # Grafik Multi-Line SVG
-â”‚   â”œâ”€â”€ PublicSentimentChart  # Donut Chart Sentimen
-â”‚   â””â”€â”€ TrendingKeywords.tsx  # Ticker Topik Populer
-â”œâ”€â”€ electron/                 # Konfigurasi Aplikasi Desktop Windows (.EXE)
-â”‚   â”œâ”€â”€ main.js               # Electron Main Process & Loopback Server
-â”‚   â””â”€â”€ preload.js            # Preload Script
-â”œâ”€â”€ lib/                      # State & Data Simulasi
-â”‚   â”œâ”€â”€ digismartContext.tsx  # React Context State Management
-â”‚   â””â”€â”€ digismartData.ts      # Dataset & Bank Soal Kuis
-â”œâ”€â”€ public/                   # Asset Statis, Ikon & manifest.json PWA
-â”œâ”€â”€ scripts/                  # Workflow & Tooling Build APK
-â””â”€â”€ capacitor.config.json     # Konfigurasi Mobile Android Capacitor
-```
-
----
-
-## ðŸ‘¨â€ðŸ’» Pengembang (Developer)
-
-<table align="center">
-  <tr>
-    <td align="center">
-      <b>Pangeran Ryan Pahlevi</b><br/>
-      <i>Software Engineer & Full-Stack Web Developer</i><br/>
-      ðŸŽ“ S1 Teknik Informatika â€” Universitas Budi Luhur<br/><br/>
-      <a href="https://github.com/raphlv">
-        <img src="https://img.shields.io/badge/GitHub-raphlv-181717?style=flat&logo=github" alt="GitHub" />
-      </a>
-      <a href="mailto:pangeranryan080504@gmail.com">
-        <img src="https://img.shields.io/badge/Email-pangeranryan080504@gmail.com-D14836?style=flat&logo=gmail&logoColor=white" alt="Email" />
-      </a>
-      <a href="https://instagram.com/jspryourbae">
-        <img src="https://img.shields.io/badge/Instagram-@jspryourbae-E4405F?style=flat&logo=instagram&logoColor=white" alt="Instagram" />
-      </a>
-    </td>
-  </tr>
-</table>
-
----
-
+# 4. BRIN PORTAL NEXT
+System.Collections.Hashtable["brin-portal-next"] = @"
 <div align="center">
-  <sub>Hak Cipta Â© 2026 DIGISMART â€” Dikembangkan oleh <a href="https://github.com/raphlv">Pangeran Ryan Pahlevi</a></sub>
+
+# ðŸ”¬ BRIN Web Portal â€” National Research & Innovation Agency
+
+### *Modernized Research Ecosystem with 12 Research Organizations & Open Laboratory Catalog*
+
+![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+
+---
+
 </div>
 
+## ðŸ“Œ About BRIN Portal
 
-<!-- Last updated: 2026-09-01 13:06:26 -->
+A modernized web portal for the **Badan Riset dan Inovasi Nasional (BRIN)**. Built with Next.js 14 App Router to unify and display 12 Research Organizations (Organisasi Riset), 85 Research Centers (Pusat Riset), ELSA open laboratory catalog, and RIIM funding schemes.
+
+---
+
+## âœ¨ Key Features
+
+- **ðŸ›ï¸ 12 Research Organizations Directory**: Complete profile, scientific fields, and patent achievements.
+- **ðŸ”¬ ELSA Laboratory Instrument Catalog**: Searchable index of 380+ scientific equipment across Indonesian facilities.
+- **ðŸ’° RIIM Research Funding Hub**: Grant schemes, submission criteria, and funding calendars.
+- **âš¡ 100% SSG Performance**: Sub-second page loads with Static Site Generation.
+
+---
+
+## ðŸš€ Setup
+
+`ash
+git clone https://github.com/raphlv/brin-portal-next.git
+cd brin-portal-next
+npm install
+npm run dev
+`
+"@
+
+# 5. BUDILUHUR PORTAL NEXT
+System.Collections.Hashtable["budiluhur-portal-next"] = @"
+<div align="center">
+
+# ðŸŽ“ Universitas Budi Luhur Portal â€” Modern Campus Platform
+
+### *Academic Information System, Faculty Hub, & Prisma ORM Architecture*
+
+![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-5.x-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+
+---
+
+</div>
+
+## ðŸ“Œ About The Project
+
+An integrated academic portal for **Universitas Budi Luhur** featuring dynamic faculty routing, student admission (PMB) guidance, course directories, and Prisma ORM relational database schema.
+
+---
+
+## âœ¨ Key Modules
+- **ðŸ›ï¸ 5 Faculty Portals**: FTI, FEB, FKIK, FIKOM, and Postgraduate programs.
+- **ðŸ“š Academic Course Index**: Comprehensive syllabus and credit lookup.
+- **ðŸ“ PMB Online Registration**: Guidance, fee calculator, and schedule.
+
+<!-- Last verified & polished: 2026-09-01 13:08:36 by Pangeran Ryan Pahlevi -->
+
