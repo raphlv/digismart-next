@@ -41,7 +41,16 @@ DIGISMART v2.0 is an enterprise public communication command center engineered f
 
 ---
 
-## Setup and Execution
+## Technology Stack
+
+- Web Core: Next.js 14, TypeScript, Tailwind CSS
+- Desktop Core: Electron 30
+- Mobile Core: Capacitor 6
+- NLP Processing: Custom Sentiment Lexicon and Polarity Classifier
+
+---
+
+## Getting Started
 
 `ash
 git clone https://github.com/raphlv/digismart-next.git
