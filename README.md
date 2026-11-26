@@ -1,72 +1,36 @@
-﻿<div align="center">
+# DIGISMART v2.0 — AI Public Communication Command Center
 
-# DIGISMART v2.0 - AI Public Communication Command Center
+Platform AI Public Communication untuk pemantauan isu, analisis sentimen 10 media nasional (Live RSS + NLP Lexicon), generator berita/siaran pers berbasis referensi 10 media, respons cepat krisis, dan ekspor laporan Word (`.docx`) serta PDF (`.pdf`).
 
-### *Cross-Platform Crisis Simulator, 5W+1H News Generator, and Public Sentiment NLP Engine*
+## Fitur Utama
 
-![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Electron](https://img.shields.io/badge/Electron-30.0-47848F?style=for-the-badge&logo=electron&logoColor=white)
-![Capacitor](https://img.shields.io/badge/Capacitor-6.0-119EFF?style=for-the-badge&logo=capacitor&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+1. **Sentiment Analysis 10 Media Nasional (`/sentiment-analysis`)**
+   - Menarik feed berita nyata (Live RSS) dari 10 media nasional Indonesia: Kompas.com, Detik.com, Tribunnews.com, CNN Indonesia, Liputan6.com, CNBC Indonesia, Okezone.com, Republika.co.id, Antara News, dan Tempo.co.
+   - Analisis sentimen NLP bahasa Indonesia dengan penanganan frasa negasi (*tidak, bukan, kurang, belum*).
+   - Ekspor laporan lengkap ke **Word (`.docx`)** dan **PDF (`.pdf`)**.
+2. **AI News & Press Release Suite (`/news-generator`)**
+   - Penulisan berita 5W+1H dan Siaran Pers Resmi yang mengacu langsung pada hasil analisis sentimen 10 media nasional (anti-halusinasi).
+   - Ekspor naskah beserta tabel lampiran referensi 10 media ke **Word (`.docx`)**, **PDF (`.pdf`)**, `.txt`, dan Print.
+3. **AI Social Listening, Quick Response, Social Media & Knowledge Base**
+   - Dukungan ekspor **Word (`.docx`)** dan **PDF (`.pdf`)** di seluruh modul dokumen/laporan.
 
----
+## Menjalankan Lokal
 
-</div>
-
-## About DIGISMART
-
-DIGISMART v2.0 is an enterprise public communication command center engineered for public relations (PR) officers, government agencies, and corporate communications teams. It automates media monitoring, evaluates public sentiment polarity, and generates journalistic news and crisis holding statements within the Golden Hour (< 60 minutes).
-
----
-
-## Key Features and Architecture
-
-### 1. Command Center and Sentiment Heatmap
-- Live sentiment polarity classification (Positive, Neutral, Negative).
-- Real-time SVG dynamic trend charts and topic cluster mapping.
-
-### 2. AI News Generator (5W+1H)
-- Automated journalistic press release generator conforming to standard 5W+1H structure.
-- Multi-channel export (Official Portal, Media Release, Social Media Payload).
-
-### 3. Crisis Response and Holding Statement Generator
-- Rapid escalation assessment based on PR disaster severity.
-- Automated holding statement and press conference talking point suggestions.
-
-### 4. Multi-Platform Deployment
-- Web App: Next.js 14 with full responsiveness.
-- Desktop App: Windows .EXE packaged via Electron.
-- Mobile App: Android .APK packaged via Capacitor.
-
----
-
-## Technology Stack
-
-- Web Core: Next.js 14, TypeScript, Tailwind CSS
-- Desktop Core: Electron 30
-- Mobile Core: Capacitor 6
-- NLP Processing: Custom Sentiment Lexicon and Polarity Classifier
-
----
-
-## Getting Started
-
-`ash
-git clone https://github.com/raphlv/digismart-next.git
-cd digismart-next
+```bash
 npm install
 npm run dev
-`
+```
 
----
+Buka `http://localhost:3006`.
 
-## Developer and Maintainer
-Pangeran Ryan Pahlevi - https://pangeranryan.vercel.app
+## Preview Klien di Vercel (Tanpa Beli Domain & Hosting)
 
-<!-- Last updated: 2026-09-03 09:00:06 -->
+1. Push isi folder ini ke repository GitHub (`raphlv/digismart-next`).
+2. Hubungkan repository ke **Vercel** (preset Next.js, Build Command: `npm run build`).
+3. **(Opsional, disarankan)** Tambahkan Environment Variable `GEMINI_API_KEY` di Vercel Project Settings untuk kualitas AI terbaik.
+4. Endpoint `/api/media-feed/` dan `/api/ai-generate/` otomatis aktif sebagai Serverless Function di Vercel untuk preview klien.
 
+## Deployment Setelah Pembelian Domain & Hosting
 
-<!-- github-contribution-sync -->
-> **Status Magang Update (2026-09-11)**: Seluruh modul terverifikasi dan siap arsip akhir magang (2026-09-11 10:19:46).
-
+- **Node.js / VPS / Vercel Custom Domain:** Jalankan `npm run build && npm run start` (port default `3006`).
+- **Shared Hosting PHP (cPanel / Apache):** Tersedia endpoint pendamping `public/media-feed.php` untuk penarikan RSS 10 media di sisi PHP.

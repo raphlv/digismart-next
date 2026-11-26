@@ -1,8 +1,0 @@
-{
-  "appId": "com.digismart.app",
-  "appName": "DIGISMART",
-  "webDir": "out",
-  "server": {
-    "androidScheme": "https"
-  }
-}

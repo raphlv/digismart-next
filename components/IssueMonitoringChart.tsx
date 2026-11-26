@@ -2,16 +2,18 @@
 
 import React, { useState } from 'react';
 import { useDigismart } from '@/lib/digismartContext';
-import { TrendingUp, Info } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 
 export default function IssueMonitoringChart() {
   const { trendData } = useDigismart();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const maxValue = Math.max(...trendData.map((d) => Math.max(d.isu, d.berita, 30)));
+  const rawMax = Math.max(0, ...trendData.map((d) => Math.max(d.isu, d.berita)));
+  const maxValue = Math.max(8, Math.ceil(rawMax / 4) * 4);
+  const yTicks = [0, 1, 2, 3, 4].map((step) => Math.round((maxValue / 4) * step));
   const height = 240;
   const width = 600;
-  const paddingX = 40;
+  const paddingX = 45;
   const paddingY = 30;
   const graphWidth = width - paddingX * 2;
   const graphHeight = height - paddingY * 2;
@@ -45,54 +47,44 @@ export default function IssueMonitoringChart() {
   const pathBerita = makeSmoothPath(pointsBerita);
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm flex flex-col h-full">
+    <div className="bg-white dark:bg-[#0B1120] rounded-2xl p-5 sm:p-6 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-blue-600" />
-          <h2 className="text-sm sm:text-base font-display font-bold text-slate-900">
+          <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          <h2 className="text-sm sm:text-base font-display font-bold text-slate-900 dark:text-white">
             Monitoring Isu dan Berita
           </h2>
         </div>
-        <div className="flex items-center gap-3 text-xs">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-            <span className="text-slate-600 font-medium">Isu Terpantau</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
-            <span className="text-slate-600 font-medium">Berita Diterbitkan</span>
-          </div>
-        </div>
       </div>
 
-      {/* Responsive SVG Chart */}
+      {/* SVG Line Chart */}
       <div className="relative flex-1 w-full pt-4 min-h-[220px]">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-full overflow-visible"
           preserveAspectRatio="none"
         >
-          {/* Y Axis Grid Lines */}
-          {[0, 0.25, 0.5, 0.75, 1].map((pct, i) => {
-            const y = height - paddingY - pct * graphHeight;
-            const val = Math.round(pct * maxValue);
+          {/* Dynamic Y Axis Grid Lines & Labels */}
+          {yTicks.map((val) => {
+            const y = height - paddingY - (val / maxValue) * graphHeight;
             return (
-              <g key={i}>
+              <g key={val}>
                 <line
                   x1={paddingX}
                   y1={y}
                   x2={width - paddingX}
                   y2={y}
-                  stroke="#E2E8F0"
+                  stroke="currentColor"
+                  className="text-slate-100 dark:text-slate-800"
                   strokeDasharray="4 4"
                   strokeWidth="1"
                 />
                 <text
-                  x={paddingX - 10}
+                  x={paddingX - 12}
                   y={y + 4}
                   textAnchor="end"
-                  className="text-[10px] fill-slate-400 font-mono"
+                  className="text-[10px] fill-slate-400 dark:fill-slate-500 font-mono"
                 >
                   {val}
                 </text>
@@ -111,39 +103,37 @@ export default function IssueMonitoringChart() {
           <path
             d={pathBerita}
             fill="none"
-            stroke="#38BDF8"
+            stroke="#06B6D4"
             strokeWidth="2.5"
             strokeLinecap="round"
           />
 
-          {/* Data Points */}
+          {/* Interactive Data Points */}
           {pointsIsu.map((pt, i) => (
-            <g key={`isu-${i}`}>
-              <circle
-                cx={pt.x}
-                cy={pt.y}
-                r={hoveredIndex === i ? 5 : 3.5}
-                className="fill-white stroke-blue-600 stroke-2 cursor-pointer transition-all"
-                onMouseEnter={() => setHoveredIndex(i)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              />
-            </g>
+            <circle
+              key={`isu-${i}`}
+              cx={pt.x}
+              cy={pt.y}
+              r={hoveredIndex === i ? 5 : 3.5}
+              className="fill-white dark:fill-slate-900 stroke-blue-600 stroke-2 cursor-pointer transition-all"
+              onMouseEnter={() => setHoveredIndex(i)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            />
           ))}
 
           {pointsBerita.map((pt, i) => (
-            <g key={`berita-${i}`}>
-              <circle
-                cx={pt.x}
-                cy={pt.y}
-                r={hoveredIndex === i ? 5 : 3.5}
-                className="fill-white stroke-sky-400 stroke-2 cursor-pointer transition-all"
-                onMouseEnter={() => setHoveredIndex(i)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              />
-            </g>
+            <circle
+              key={`berita-${i}`}
+              cx={pt.x}
+              cy={pt.y}
+              r={hoveredIndex === i ? 5 : 3.5}
+              className="fill-white dark:fill-slate-900 stroke-cyan-500 stroke-2 cursor-pointer transition-all"
+              onMouseEnter={() => setHoveredIndex(i)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            />
           ))}
 
-          {/* X Axis Labels */}
+          {/* X Axis Labels: Sen, Sel, Rab, Kam, Jum, Sab, Min */}
           {trendData.map((d, i) => {
             const x = paddingX + (i / (trendData.length - 1)) * graphWidth;
             return (
@@ -152,7 +142,7 @@ export default function IssueMonitoringChart() {
                 x={x}
                 y={height - 8}
                 textAnchor="middle"
-                className="text-[11px] fill-slate-600 font-medium"
+                className="text-[11px] fill-slate-500 dark:fill-slate-400 font-medium"
               >
                 {d.day}
               </text>
@@ -163,30 +153,25 @@ export default function IssueMonitoringChart() {
         {/* Hover Tooltip */}
         {hoveredIndex !== null && (
           <div
-            className="absolute z-10 bg-slate-900 text-white text-xs rounded-lg p-2 shadow-lg border border-slate-700 pointer-events-none transform -translate-x-1/2 -translate-y-full"
+            className="absolute z-10 bg-slate-900 dark:bg-slate-800 text-white text-xs rounded-lg p-2 shadow-lg border border-slate-700 pointer-events-none transform -translate-x-1/2 -translate-y-full"
             style={{
               left: `${(pointsIsu[hoveredIndex].x / width) * 100}%`,
               top: `${(Math.min(pointsIsu[hoveredIndex].y, pointsBerita[hoveredIndex].y) / height) * 100 - 10}%`,
             }}
           >
             <div className="font-bold border-b border-slate-700 pb-1 mb-1">
-              Hari {trendData[hoveredIndex].day}
+              {trendData[hoveredIndex].day}
             </div>
-            <div className="flex items-center justify-between gap-3 text-blue-300">
+            <div className="flex items-center justify-between gap-3 text-blue-400">
               <span>Isu:</span>
               <span className="font-bold font-mono">{trendData[hoveredIndex].isu}</span>
             </div>
-            <div className="flex items-center justify-between gap-3 text-sky-300">
+            <div className="flex items-center justify-between gap-3 text-cyan-400">
               <span>Berita:</span>
               <span className="font-bold font-mono">{trendData[hoveredIndex].berita}</span>
             </div>
           </div>
         )}
-      </div>
-
-      <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-        <span>Periode pemantauan 7 hari terakhir</span>
-        <span className="font-medium text-slate-600">Frekuensi: Real-Time Stream</span>
       </div>
     </div>
   );

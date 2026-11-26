@@ -1,35 +1,46 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
-import { 
-  StatItem, 
-  INITIAL_STATS, 
-  INITIAL_TREND_DATA, 
-  INITIAL_SENTIMENT, 
-  IssueTrendPoint, 
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import {
+  StatItem,
+  INITIAL_STATS,
+  INITIAL_TREND_DATA,
+  INITIAL_SENTIMENT,
+  INITIAL_ISSUES,
+  MOCK_MEDIA_ARTICLES,
+  INITIAL_KNOWLEDGE_DOCS,
+  IssueTrendPoint,
   SentimentBreakdown,
-  SocialListeningPost,
-  SIMULATED_SOCIAL_FEED,
-  TRENDING_KEYWORDS
+  MonitoredIssue,
+  MediaArticle,
+  KnowledgeDocument,
 } from './digismartData';
+import {
+  analyzeSentimentLexicon,
+  TenMediaSummary,
+  summarizeTenMedia,
+} from './sentimentEngine';
 
 export interface GeneratedArticle {
   id: string;
   title: string;
   topic: string;
-  tone: string;
+  outputType: string;
   content: string;
-  leadParagraph: string;
-  quotes: string;
+  leadParagraph?: string;
+  quotes?: string;
+  keywords?: string[];
+  instansi?: string;
+  lokasi?: string;
+  narasumber?: string;
   timestamp: string;
-  keywords: string[];
 }
 
 export interface SentimentResult {
   id: string;
   inputText: string;
   polarity: 'positif' | 'netral' | 'negatif';
-  score: number; // -1 to 1 or 0-100%
+  score: number; // 0-100%
   dominantEmotion: string;
   positiveKeywords: string[];
   negativeKeywords: string[];
@@ -41,83 +52,222 @@ export interface DigismartContextType {
   stats: StatItem[];
   trendData: IssueTrendPoint[];
   sentiment: SentimentBreakdown;
-  socialPosts: SocialListeningPost[];
-  trendingKeywords: typeof TRENDING_KEYWORDS;
+  issues: MonitoredIssue[];
   articles: GeneratedArticle[];
+  mediaArticles: MediaArticle[];
+  mediaSummary: TenMediaSummary | null;
+  knowledgeDocs: KnowledgeDocument[];
   sentimentHistory: SentimentResult[];
-  activeScenario: string;
-  setActiveScenario: (scenario: string) => void;
+  trendingKeywords: { keyword: string; count: string; sentiment: string }[];
+  darkMode: boolean;
+  toggleDarkMode: () => void;
+  resetAllData: () => void;
+  addIssue: (issue: Omit<MonitoredIssue, 'id' | 'timestamp'>) => void;
+  deleteIssue: (id: string) => void;
   addArticle: (article: Omit<GeneratedArticle, 'id' | 'timestamp'>) => void;
+  addKnowledgeDoc: (doc: Omit<KnowledgeDocument, 'id' | 'date'>) => void;
+  addMediaArticle: (art: Omit<MediaArticle, 'id' | 'timestamp'>) => void;
+  recordTenMediaMonitoring: (articles: MediaArticle[], summary: TenMediaSummary) => void;
   analyzeText: (text: string) => SentimentResult;
-  addSocialPost: (post: Omit<SocialListeningPost, 'id' | 'timestamp'>) => void;
-  resetSimulation: () => void;
 }
 
 const DigismartContext = createContext<DigismartContextType | undefined>(undefined);
+
+const STORAGE_KEYS = {
+  STATS: 'digismart_v3_fresh_stats',
+  TREND: 'digismart_v3_fresh_trend',
+  SENTIMENT: 'digismart_v3_fresh_sentiment',
+  ISSUES: 'digismart_v3_fresh_issues',
+  DOCS: 'digismart_v3_fresh_docs',
+  ARTICLES: 'digismart_v3_fresh_articles',
+  MEDIA: 'digismart_v3_fresh_media',
+  MEDIA_SUMMARY: 'digismart_v3_fresh_media_summary',
+  THEME: 'digismart_v3_fresh_theme',
+};
 
 export function DigismartProvider({ children }: { children: React.ReactNode }) {
   const [stats, setStats] = useState<StatItem[]>(INITIAL_STATS);
   const [trendData, setTrendData] = useState<IssueTrendPoint[]>(INITIAL_TREND_DATA);
   const [sentiment, setSentiment] = useState<SentimentBreakdown>(INITIAL_SENTIMENT);
-  const [socialPosts, setSocialPosts] = useState<SocialListeningPost[]>(SIMULATED_SOCIAL_FEED);
-  const [trendingKeywords, setTrendingKeywords] = useState(TRENDING_KEYWORDS);
-  const [articles, setArticles] = useState<GeneratedArticle[]>([
-    {
-      id: 'art-1',
-      title: 'Optimalisasi Infrastruktur Server Akademik: Layanan KRS Mahasiswa Kini Lebih Cepat',
-      topic: 'Layanan Teknologi Kampus',
-      tone: 'Formal & Informatif',
-      leadParagraph: 'Pusat Teknologi Informasi dan Komunikasi mengumumkan keberhasilan migrasi sistem komputasi awan yang melipatgandakan kapasitas throughput server akademik hingga 300%.',
-      quotes: '"Peningkatan kapasitas ini memastikan seluruh mahasiswa dapat memproses registrasi semester secara lancar tanpa hambatan teknis," tegas Kepala Biro Humas.',
-      content: 'Langkah strategis ini dilakukan menyusul evaluasi berkala terhadap beban puncak lalu lintas jaringan. Selain peningkatan server, tim teknis juga menyiagakan posko pendampingan teknis 24 jam selama masa registrasi.',
-      timestamp: 'Hari ini, 09:30 WIB',
-      keywords: ['Infrastruktur IT', 'KRS Mahasiswa', 'Cloud Server'],
-    }
-  ]);
+  const [issues, setIssues] = useState<MonitoredIssue[]>(INITIAL_ISSUES);
+  const [articles, setArticles] = useState<GeneratedArticle[]>([]);
+  const [mediaArticles, setMediaArticles] = useState<MediaArticle[]>(MOCK_MEDIA_ARTICLES);
+  const [mediaSummary, setMediaSummary] = useState<TenMediaSummary | null>(null);
+  const [knowledgeDocs, setKnowledgeDocs] = useState<KnowledgeDocument[]>(INITIAL_KNOWLEDGE_DOCS);
   const [sentimentHistory, setSentimentHistory] = useState<SentimentResult[]>([]);
-  const [activeScenario, setActiveScenarioState] = useState<string>('Umum (Default)');
+  const [trendingKeywords, setTrendingKeywords] = useState<
+    { keyword: string; count: string; sentiment: string }[]
+  >([]);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
 
-  const setActiveScenario = (scenario: string) => {
-    setActiveScenarioState(scenario);
-    if (scenario === 'Krisis Server KRS') {
-      setStats([
-        { id: 'berita', title: 'Total Berita Dibuat', value: 7, change: '+40%', isPositive: true, iconName: 'FileText' },
-        { id: 'isu', title: 'Isu Dipantau', value: 14, change: '+180%', isPositive: false, iconName: 'Radio' },
-        { id: 'sentimen', title: 'Analisis Sentimen', value: 28, change: '+133%', isPositive: false, iconName: 'Activity' },
-        { id: 'aktivitas', title: 'Aktivitas AI Hari Ini', value: 34, change: '+100%', isPositive: true, iconName: 'Zap' },
-      ]);
-      setSentiment({ positif: 20, netral: 25, negatif: 55 });
-      setTrendData([
-        { day: 'Sen', isu: 10, berita: 5 },
-        { day: 'Sel', isu: 14, berita: 8 },
-        { day: 'Rab', isu: 35, berita: 22 },
-        { day: 'Kam', isu: 48, berita: 31 },
-        { day: 'Jum', isu: 40, berita: 28 },
-        { day: 'Sab', isu: 22, berita: 18 },
-        { day: 'Min', isu: 15, berita: 12 },
-      ]);
-    } else if (scenario === 'Peluncuran Beasiswa Prestasi') {
-      setStats([
-        { id: 'berita', title: 'Total Berita Dibuat', value: 8, change: '+60%', isPositive: true, iconName: 'FileText' },
-        { id: 'isu', title: 'Isu Dipantau', value: 6, change: '+20%', isPositive: true, iconName: 'Radio' },
-        { id: 'sentimen', title: 'Analisis Sentimen', value: 19, change: '+58%', isPositive: true, iconName: 'Activity' },
-        { id: 'aktivitas', title: 'Aktivitas AI Hari Ini', value: 24, change: '+41%', isPositive: true, iconName: 'Zap' },
-      ]);
-      setSentiment({ positif: 70, netral: 22, negatif: 8 });
-      setTrendData([
-        { day: 'Sen', isu: 8, berita: 6 },
-        { day: 'Sel', isu: 12, berita: 10 },
-        { day: 'Rab', isu: 20, berita: 18 },
-        { day: 'Kam', isu: 28, berita: 24 },
-        { day: 'Jum', isu: 30, berita: 26 },
-        { day: 'Sab', isu: 18, berita: 15 },
-        { day: 'Min', isu: 10, berita: 8 },
-      ]);
-    } else {
-      setStats(INITIAL_STATS);
-      setSentiment(INITIAL_SENTIMENT);
-      setTrendData(INITIAL_TREND_DATA);
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('digismart_stats_v2');
+        localStorage.removeItem('digismart_issues_v2');
+        localStorage.removeItem('digismart_docs_v2');
+        localStorage.removeItem('digismart_articles_v2');
+
+        const storedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
+        if (storedTheme === 'dark') {
+          setDarkMode(true);
+          document.documentElement.classList.add('dark');
+        } else {
+          setDarkMode(false);
+          document.documentElement.classList.remove('dark');
+        }
+
+        const storedStats = localStorage.getItem(STORAGE_KEYS.STATS);
+        if (storedStats) {
+          const parsed = JSON.parse(storedStats);
+          if (Array.isArray(parsed)) setStats(parsed);
+        }
+
+        const storedTrend = localStorage.getItem(STORAGE_KEYS.TREND);
+        if (storedTrend) {
+          const parsed = JSON.parse(storedTrend);
+          if (Array.isArray(parsed)) setTrendData(parsed);
+        }
+
+        const storedSentiment = localStorage.getItem(STORAGE_KEYS.SENTIMENT);
+        if (storedSentiment) {
+          const parsed = JSON.parse(storedSentiment);
+          if (parsed && typeof parsed.positif === 'number') setSentiment(parsed);
+        }
+
+        const storedIssues = localStorage.getItem(STORAGE_KEYS.ISSUES);
+        if (storedIssues) {
+          const parsed = JSON.parse(storedIssues);
+          if (Array.isArray(parsed)) setIssues(parsed);
+        }
+
+        const storedDocs = localStorage.getItem(STORAGE_KEYS.DOCS);
+        if (storedDocs) {
+          const parsed = JSON.parse(storedDocs);
+          if (Array.isArray(parsed)) setKnowledgeDocs(parsed);
+        }
+
+        const storedArticles = localStorage.getItem(STORAGE_KEYS.ARTICLES);
+        if (storedArticles) {
+          const parsed = JSON.parse(storedArticles);
+          if (Array.isArray(parsed)) setArticles(parsed);
+        }
+
+        const storedMedia = localStorage.getItem(STORAGE_KEYS.MEDIA);
+        if (storedMedia) {
+          const parsed = JSON.parse(storedMedia);
+          if (Array.isArray(parsed)) {
+            setMediaArticles(parsed);
+            const storedSum = localStorage.getItem(STORAGE_KEYS.MEDIA_SUMMARY);
+            if (storedSum) {
+              setMediaSummary(JSON.parse(storedSum));
+            } else if (parsed.length > 0) {
+              setMediaSummary(summarizeTenMedia(parsed, parsed[0].topic || 'Publik', parsed[0].topic || 'Publik'));
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Storage reading error:', e);
     }
+  }, []);
+
+  const resetAllData = () => {
+    if (typeof window !== 'undefined') {
+      Object.values(STORAGE_KEYS).forEach((k) => {
+        if (k !== STORAGE_KEYS.THEME) localStorage.removeItem(k);
+      });
+    }
+    setStats(INITIAL_STATS);
+    setTrendData(INITIAL_TREND_DATA);
+    setSentiment(INITIAL_SENTIMENT);
+    setIssues([]);
+    setArticles([]);
+    setMediaArticles([]);
+    setMediaSummary(null);
+    setKnowledgeDocs([]);
+    setSentimentHistory([]);
+    setTrendingKeywords([]);
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => {
+      const next = !prev;
+      if (typeof window !== 'undefined') {
+        if (next) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem(STORAGE_KEYS.THEME, 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem(STORAGE_KEYS.THEME, 'light');
+        }
+      }
+      return next;
+    });
+  };
+
+  const getTodayDayName = () => {
+    const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    return days[new Date().getDay()];
+  };
+
+  const addIssue = (item: Omit<MonitoredIssue, 'id' | 'timestamp'>) => {
+    const newIssue: MonitoredIssue = {
+      ...item,
+      id: `issue-${Date.now()}`,
+      timestamp: 'Baru saja',
+    };
+    setIssues((prev) => {
+      const updated = [newIssue, ...prev];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.ISSUES, JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    setStats((prev) => {
+      const updated = prev.map((s) => {
+        if (s.id === 'isu' || s.id === 'aktivitas') {
+          const newVal = s.value + 1;
+          return { ...s, value: newVal, change: `+${newVal}` };
+        }
+        return s;
+      });
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    const today = getTodayDayName();
+    setTrendData((prev) => {
+      const updated = prev.map((pt) =>
+        pt.day === today ? { ...pt, isu: pt.isu + 1 } : pt
+      );
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.TREND, JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
+  const deleteIssue = (id: string) => {
+    setIssues((prev) => {
+      const updated = prev.filter((i) => i.id !== id);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.ISSUES, JSON.stringify(updated));
+      }
+      return updated;
+    });
+    setStats((prev) => {
+      const updated = prev.map((s) =>
+        s.id === 'isu' ? { ...s, value: Math.max(0, s.value - 1) } : s
+      );
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const addArticle = (art: Omit<GeneratedArticle, 'id' | 'timestamp'>) => {
@@ -126,76 +276,177 @@ export function DigismartProvider({ children }: { children: React.ReactNode }) {
       id: `art-${Date.now()}`,
       timestamp: 'Baru saja',
     };
-    setArticles([newArt, ...articles]);
-    setStats((prev) =>
-      prev.map((s) => (s.id === 'berita' ? { ...s, value: s.value + 1 } : s.id === 'aktivitas' ? { ...s, value: s.value + 1 } : s))
-    );
+    setArticles((prev) => {
+      const updated = [newArt, ...prev];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    setStats((prev) => {
+      const updated = prev.map((s) => {
+        if (s.id === 'berita' || s.id === 'aktivitas') {
+          const newVal = s.value + 1;
+          return { ...s, value: newVal, change: `+${newVal}` };
+        }
+        return s;
+      });
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    const today = getTodayDayName();
+    setTrendData((prev) => {
+      const updated = prev.map((pt) =>
+        pt.day === today ? { ...pt, berita: pt.berita + 1 } : pt
+      );
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.TREND, JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
+  const addKnowledgeDoc = (doc: Omit<KnowledgeDocument, 'id' | 'date'>) => {
+    const newDoc: KnowledgeDocument = {
+      ...doc,
+      id: `doc-${Date.now()}`,
+      date: 'Hari ini',
+    };
+    setKnowledgeDocs((prev) => {
+      const updated = [newDoc, ...prev];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.DOCS, JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    setStats((prev) => {
+      const updated = prev.map((s) =>
+        s.id === 'aktivitas' ? { ...s, value: s.value + 1, change: `+${s.value + 1}` } : s
+      );
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
+  const addMediaArticle = (art: Omit<MediaArticle, 'id' | 'timestamp'>) => {
+    const newArt: MediaArticle = {
+      ...art,
+      id: `med-${Date.now()}`,
+      timestamp: 'Baru saja',
+    };
+    setMediaArticles((prev) => {
+      const updated = [newArt, ...prev];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.MEDIA, JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
+  const recordTenMediaMonitoring = (
+    monitoredArticles: MediaArticle[],
+    summary: TenMediaSummary
+  ) => {
+    setMediaArticles(monitoredArticles);
+    setMediaSummary(summary);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.MEDIA, JSON.stringify(monitoredArticles));
+      localStorage.setItem(STORAGE_KEYS.MEDIA_SUMMARY, JSON.stringify(summary));
+    }
+
+    const posKw = summary.topPositiveKeywords.map((kw) => ({
+      keyword: kw,
+      count: `${summary.positifCount} media`,
+      sentiment: 'positif',
+    }));
+    const negKw = summary.topNegativeKeywords.map((kw) => ({
+      keyword: kw,
+      count: `${summary.negatifCount} media`,
+      sentiment: 'negatif',
+    }));
+    setTrendingKeywords([...posKw, ...negKw].slice(0, 8));
+
+    setSentiment((prev) => {
+      const updated = {
+        positif: prev.positif + summary.positifCount,
+        netral: prev.netral + summary.netralCount,
+        negatif: prev.negatif + summary.negatifCount,
+      };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.SENTIMENT, JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    setStats((prev) => {
+      const updated = prev.map((s) => {
+        if (s.id === 'sentimen') {
+          const newVal = s.value + monitoredArticles.length;
+          return { ...s, value: newVal, change: `+${newVal}` };
+        }
+        if (s.id === 'aktivitas') {
+          const newVal = s.value + 1;
+          return { ...s, value: newVal, change: `+${newVal}` };
+        }
+        return s;
+      });
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(updated));
+      }
+      return updated;
+    });
   };
 
   const analyzeText = (text: string): SentimentResult => {
-    const lower = text.toLowerCase();
-    const posWords = ['bagus', 'keren', 'terima kasih', 'cepat', 'lancar', 'puas', 'mantap', 'bermanfaat', 'apresiasi', 'sukses', 'solutif', 'transparan'];
-    const negWords = ['lambat', 'kecewa', 'down', 'eror', 'rusak', 'sulit', 'mahal', 'buruk', 'parah', 'bingung', 'tidak jelas', 'gagal', 'keluhan'];
-
-    const foundPos = posWords.filter((w) => lower.includes(w));
-    const foundNeg = negWords.filter((w) => lower.includes(w));
-
-    let polarity: 'positif' | 'netral' | 'negatif' = 'netral';
-    let score = 50;
-    let dominantEmotion = 'Netral & Objektif';
-    let recommendation = 'Pertahankan penyampaian informasi yang berimbang dan pantau respon lanjutan publik.';
-
-    if (foundPos.length > foundNeg.length) {
-      polarity = 'positif';
-      score = Math.min(95, 60 + foundPos.length * 12);
-      dominantEmotion = 'Apresiasi & Kepuasan Publik';
-      recommendation = 'Jadikan sentimen positif ini sebagai materi penguatan reputasi di kanal publikasi resmi.';
-    } else if (foundNeg.length > foundPos.length) {
-      polarity = 'negatif';
-      score = Math.max(10, 40 - foundNeg.length * 10);
-      dominantEmotion = 'Kekhawatiran / Kekecewaan';
-      recommendation = 'Segera siapkan tanggapan resmi (Holding Statement) dan mitigasi kendala teknis dalam 60 menit.';
-    }
+    const analysis = analyzeSentimentLexicon(text);
 
     const result: SentimentResult = {
       id: `sent-${Date.now()}`,
       inputText: text,
-      polarity,
-      score,
-      dominantEmotion,
-      positiveKeywords: foundPos.length > 0 ? foundPos : ['informatif', 'terkait'],
-      negativeKeywords: foundNeg.length > 0 ? foundNeg : [],
-      recommendation,
+      polarity: analysis.polarity,
+      score: analysis.score,
+      dominantEmotion: analysis.dominantEmotion,
+      positiveKeywords: analysis.positiveKeywords,
+      negativeKeywords: analysis.negativeKeywords,
+      recommendation: analysis.recommendation,
       timestamp: 'Baru saja',
     };
 
-    setSentimentHistory([result, ...sentimentHistory]);
-    setStats((prev) =>
-      prev.map((s) => (s.id === 'sentimen' ? { ...s, value: s.value + 1 } : s.id === 'aktivitas' ? { ...s, value: s.value + 1 } : s))
-    );
+    setSentimentHistory((prev) => [result, ...prev]);
+
+    setSentiment((prev) => {
+      const updated = {
+        ...prev,
+        [analysis.polarity]: prev[analysis.polarity] + 1,
+      };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.SENTIMENT, JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    setStats((prev) => {
+      const updated = prev.map((s) => {
+        if (s.id === 'sentimen' || s.id === 'aktivitas') {
+          const newVal = s.value + 1;
+          return { ...s, value: newVal, change: `+${newVal}` };
+        }
+        return s;
+      });
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(updated));
+      }
+      return updated;
+    });
 
     return result;
-  };
-
-  const addSocialPost = (post: Omit<SocialListeningPost, 'id' | 'timestamp'>) => {
-    const newPost: SocialListeningPost = {
-      ...post,
-      id: `post-${Date.now()}`,
-      timestamp: 'Baru saja',
-    };
-    setSocialPosts([newPost, ...socialPosts]);
-    setStats((prev) =>
-      prev.map((s) => (s.id === 'isu' ? { ...s, value: s.value + 1 } : s))
-    );
-  };
-
-  const resetSimulation = () => {
-    setActiveScenarioState('Umum (Default)');
-    setStats(INITIAL_STATS);
-    setTrendData(INITIAL_TREND_DATA);
-    setSentiment(INITIAL_SENTIMENT);
-    setSocialPosts(SIMULATED_SOCIAL_FEED);
-    setSentimentHistory([]);
   };
 
   return (
@@ -204,16 +455,23 @@ export function DigismartProvider({ children }: { children: React.ReactNode }) {
         stats,
         trendData,
         sentiment,
-        socialPosts,
-        trendingKeywords,
+        issues,
         articles,
+        mediaArticles,
+        mediaSummary,
+        knowledgeDocs,
         sentimentHistory,
-        activeScenario,
-        setActiveScenario,
+        trendingKeywords,
+        darkMode,
+        toggleDarkMode,
+        resetAllData,
+        addIssue,
+        deleteIssue,
         addArticle,
+        addKnowledgeDoc,
+        addMediaArticle,
+        recordTenMediaMonitoring,
         analyzeText,
-        addSocialPost,
-        resetSimulation,
       }}
     >
       {children}

@@ -66,3 +66,21 @@
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
+
+/* Clean Print / PDF Styling */
+@media print {
+  aside,
+  header,
+  .no-print {
+    display: none !important;
+  }
+
+  .lg\:pl-72 {
+    padding-left: 0 !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+}

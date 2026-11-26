@@ -1,0 +1,43 @@
+<IfModule mod_headers.c>
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Prevent loop
+    RewriteCond %{REQUEST_URI} out/
+    RewriteRule ^ - [L]
+
+    # If requested file exists in out/
+    RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_URI} !-f
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}/index.html -f
+    RewriteRule ^(.*)/?$ $1/index.html [L]
+
+    # Subdirectory support: /digismart/xxx -> out/xxx
+    RewriteCond %{REQUEST_URI} ^/digismart/(.*)$
+    RewriteCond %{DOCUMENT_ROOT}/digismart/out/%1 -f
+    RewriteRule ^(.*)$ out/$1 [L]
+
+    RewriteCond %{REQUEST_URI} ^/digismart/(.*)$
+    RewriteCond %{DOCUMENT_ROOT}/digismart/out/%1/index.html -f
+    RewriteRule ^(.*)$ out/$1/index.html [L]
+
+    # VirtualHost root support: /xxx -> out/xxx
+    RewriteCond %{DOCUMENT_ROOT}/out/%{REQUEST_URI} -f
+    RewriteRule ^(.*)$ out/$1 [L]
+
+    RewriteCond %{DOCUMENT_ROOT}/out/%{REQUEST_URI}/index.html -f
+    RewriteRule ^(.*)$ out/$1/index.html [L]
+
+    # Fallback to out/index.html
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ out/index.html [L]
+</IfModule>
